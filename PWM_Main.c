@@ -19,15 +19,26 @@ void main(void)
     PieCtrlRegs.PIEIER3.bit.INTx1 = 1;
     EINT;
     ERTM;
-    for(;;)
-    	asm("   NOP");
+    while(1)
+    {
+    	if(flag_SystemEnable==0)
+    	{
+    		EPwm1Regs.AQCSFRC.all=0x0005;
+    		EPwm2Regs.AQCSFRC.all=0x0005;
+    	}
+    	else
+    	{
+    		EPwm1Regs.AQCSFRC.all=0x0000;
+    		EPwm2Regs.AQCSFRC.all=0x0000;
+    	}
+    }
 }
 interrupt void EPwm1_isr(void)
 {
+	flag_SystemEnable=1;
 	ReadADC(ADCResults);
-	v=vg();
-	EPwm1Regs.CMPA.half.CMPA=(v/100+0.5)*EPwm1_TIMER_TBPRD;
-	EPwm2Regs.CMPA.half.CMPA=(v/100+0.5)*EPwm2_TIMER_TBPRD;
+	EPwm1Regs.CMPA.half.CMPA=(ADCResults[0]/4096)*EPwm1_TIMER_TBPRD;
+	EPwm2Regs.CMPA.half.CMPA=(ADCResults[0]/4096)*EPwm2_TIMER_TBPRD;
 	EPwm1Regs.ETCLR.bit.INT=1;
 	PieCtrlRegs.PIEACK.all=PIEACK_GROUP3;
 }

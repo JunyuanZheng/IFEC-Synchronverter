@@ -1,7 +1,9 @@
 #ifndef PWM_VARIABLE_H_
 #define PWM_VARIABLE_H_
 
-Uint16 ADCResults[1];//ADC结果储存
+Uint16 flag_SystemEnable=0;
+Uint16 ADCResults[1]={0};//ADC结果储存
+
 
 float v=0;
 Uint32 kt=0;

@@ -161,7 +161,7 @@ SECTIONS
 
    }
    */
-
+   IQmathTablesRam  : > RAML4,     PAGE = 1
    FPUmathTables    : > FPUTABLES, PAGE = 0, TYPE = NOLOAD
 
    DMARAML4         : > RAML4,     PAGE = 1

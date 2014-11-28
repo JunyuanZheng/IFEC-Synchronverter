@@ -3,67 +3,70 @@
 
 void InitEPwm1(void)
 {
-   EPwm1Regs.TBPRD = EPwm1_TIMER_TBPRD;
-   EPwm1Regs.TBPHS.half.TBPHS = 0x0000;
-   EPwm1Regs.TBCTR = 0x0000;
+   EPwm1Regs.TBPRD=EPwm1_TIMER_TBPRD;
+   EPwm1Regs.TBPHS.half.TBPHS=0x0000;
+   EPwm1Regs.TBCTR=0x0000;
 
-   EPwm1Regs.CMPA.half.CMPA = 3000;
-   EPwm1Regs.CMPB = 3000;
+   EPwm1Regs.CMPA.half.CMPA=3000;
+   EPwm1Regs.CMPB=3000;
 
-   EPwm1Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN;
-   EPwm1Regs.TBCTL.bit.PHSEN = TB_DISABLE;
-   EPwm1Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;
-   EPwm1Regs.TBCTL.bit.CLKDIV = TB_DIV1;
+   EPwm1Regs.TBCTL.bit.CTRMODE=TB_COUNT_UPDOWN;
+   EPwm1Regs.TBCTL.bit.PHSEN=TB_DISABLE;
+   EPwm1Regs.TBCTL.bit.HSPCLKDIV=TB_DIV1;
+   EPwm1Regs.TBCTL.bit.CLKDIV=TB_DIV1;
 
-   EPwm1Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
-   EPwm1Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
-   EPwm1Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD;
-   EPwm1Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO_PRD;
+   EPwm1Regs.CMPCTL.bit.SHDWAMODE=CC_SHADOW;
+   EPwm1Regs.CMPCTL.bit.SHDWBMODE=CC_SHADOW;
+   EPwm1Regs.CMPCTL.bit.LOADAMODE=CC_CTR_ZERO_PRD;
+   EPwm1Regs.CMPCTL.bit.LOADBMODE=CC_CTR_ZERO_PRD;
 
-   EPwm1Regs.AQCTLA.bit.CAU = AQ_CLEAR;
-   EPwm1Regs.AQCTLA.bit.CAD = AQ_SET;
-   EPwm1Regs.AQCTLB.bit.CAU = AQ_SET;
-   EPwm1Regs.AQCTLB.bit.CAD = AQ_CLEAR;
+   EPwm1Regs.AQCTLA.bit.CAU=AQ_CLEAR;
+   EPwm1Regs.AQCTLA.bit.CAD=AQ_SET;
+   EPwm1Regs.AQCTLB.bit.CAU=AQ_SET;
+   EPwm1Regs.AQCTLB.bit.CAD=AQ_CLEAR;
 
-   EPwm1Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;
-   EPwm1Regs.ETSEL.bit.INTEN = 1;
-   EPwm1Regs.ETPS.bit.INTPRD = ET_1ST;
+   EPwm1Regs.ETSEL.bit.INTSEL=ET_CTR_ZERO;
+   EPwm1Regs.ETSEL.bit.INTEN=1;
+   EPwm1Regs.ETPS.bit.INTPRD=ET_1ST;
+   EPwm1Regs.ETCLR.bit.INT=1;
 
-   EPwm1Regs.DBCTL.all = 0xb;
-   EPwm1Regs.DBRED = 60;
-   EPwm1Regs.DBFED = 60;
+   EPwm1Regs.DBCTL.all=0xb;
+   EPwm1Regs.DBRED=60;
+   EPwm1Regs.DBFED=60;
 }
+
 void InitEPwm2(void)
 {
-   EPwm2Regs.TBPRD = EPwm1_TIMER_TBPRD;
-   EPwm2Regs.TBPHS.half.TBPHS = 0x0000;
-   EPwm2Regs.TBCTR = 0x0000;
+   EPwm2Regs.TBPRD=EPwm1_TIMER_TBPRD;
+   EPwm2Regs.TBPHS.half.TBPHS=0x0000;
+   EPwm2Regs.TBCTR=0x0000;
 
-   EPwm2Regs.CMPA.half.CMPA =1900;
-   EPwm2Regs.CMPB = 1900;
+   EPwm2Regs.CMPA.half.CMPA=1900;
+   EPwm2Regs.CMPB=1900;
 
-   EPwm2Regs.TBCTL.bit.CTRMODE = TB_COUNT_UPDOWN;
-   EPwm2Regs.TBCTL.bit.PHSEN = TB_DISABLE;
-   EPwm2Regs.TBCTL.bit.HSPCLKDIV = TB_DIV1;
-   EPwm2Regs.TBCTL.bit.CLKDIV = TB_DIV1;
+   EPwm2Regs.TBCTL.bit.CTRMODE=TB_COUNT_UPDOWN;
+   EPwm2Regs.TBCTL.bit.PHSEN=TB_DISABLE;
+   EPwm2Regs.TBCTL.bit.HSPCLKDIV=TB_DIV1;
+   EPwm2Regs.TBCTL.bit.CLKDIV=TB_DIV1;
 
-   EPwm2Regs.CMPCTL.bit.SHDWAMODE = CC_SHADOW;
-   EPwm2Regs.CMPCTL.bit.SHDWBMODE = CC_SHADOW;
-   EPwm2Regs.CMPCTL.bit.LOADAMODE = CC_CTR_ZERO_PRD;
-   EPwm2Regs.CMPCTL.bit.LOADBMODE = CC_CTR_ZERO_PRD;
+   EPwm2Regs.CMPCTL.bit.SHDWAMODE=CC_SHADOW;
+   EPwm2Regs.CMPCTL.bit.SHDWBMODE=CC_SHADOW;
+   EPwm2Regs.CMPCTL.bit.LOADAMODE=CC_CTR_ZERO_PRD;
+   EPwm2Regs.CMPCTL.bit.LOADBMODE=CC_CTR_ZERO_PRD;
 
-   EPwm2Regs.AQCTLA.bit.CAU = AQ_CLEAR;
-   EPwm2Regs.AQCTLA.bit.CAD = AQ_SET;
-   EPwm2Regs.AQCTLB.bit.CAU = AQ_SET;
-   EPwm2Regs.AQCTLB.bit.CAD = AQ_CLEAR;
+   EPwm2Regs.AQCTLA.bit.CAU=AQ_CLEAR;
+   EPwm2Regs.AQCTLA.bit.CAD=AQ_SET;
+   EPwm2Regs.AQCTLB.bit.CAU=AQ_SET;
+   EPwm2Regs.AQCTLB.bit.CAD=AQ_CLEAR;
 
-   EPwm2Regs.ETSEL.bit.INTSEL = ET_CTR_ZERO;
-   EPwm2Regs.ETSEL.bit.INTEN = 1;
-   EPwm2Regs.ETPS.bit.INTPRD = ET_1ST;
+   EPwm2Regs.ETSEL.bit.SOCAEN=1;//设置ePWM_SOCA为ADC模块的启动信号，使能A组的启动信号SOCA
+   EPwm2Regs.ETSEL.bit.SOCASEL=ET_CTR_ZERO;//选择SOCA信号产生的时刻为CTR=ZERO
+   EPwm2Regs.ETPS.bit.SOCAPRD=ET_1ST;//每次触发事件产生一个启动信号
+   EPwm2Regs.ETCLR.bit.SOCA=1;//清除SOCA标志位
 
-   EPwm1Regs.DBCTL.all = 0xb;
-   EPwm1Regs.DBRED = 60;
-   EPwm1Regs.DBFED = 60;
+   EPwm2Regs.DBCTL.all=0xb;
+   EPwm2Regs.DBRED=50;
+   EPwm2Regs.DBFED=50;
 }
 
 
