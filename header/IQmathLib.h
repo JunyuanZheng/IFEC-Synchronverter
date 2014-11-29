@@ -1,5 +1,5 @@
-// TI File $Revision: /main/2 $
-// Checkin $Date: July 10, 2008   10:59:52 $
+// TI File $Revision: /main/7 $
+// Checkin $Date: July 29, 2011   11:03:53 $
 //###########################################################################
 //
 // FILE:    IQmathLib.h
@@ -44,9 +44,50 @@
 //      |             |       | 5. Included limits.h and changed the definition
 //      |             |       |    of MAX_IQ_NEG to LONG_MIN and MAX_IQ_POS
 //      |             |       |    to LONG_MAX
+// -----|-------------|-------|----------------------------------------------
+//  1.5c| 8 June 2010 |  LH   | Changes made to improve porting between IQ and
+//      |             |       | and float.
+//      |             |       |
+//      |             |       | 1. Added left shift and right shift #defines
+//      |             |       |    for multiplying and dividing by power of
+//      |             |       |    2 (up to 64) for IQ_MATH
+//      |             |       |
+//      |             |       | 2. Added corresponding multiply/divide #defines
+//      |             |       |    for powers of 2 (up to 64) for FLOAT_MATH
+//      |             |       |
+//      |             |       | 3. FLOAT_MATH: Corrected the #defines for
+//      |             |       |    conversion from IQ to Q15
+//      |             |       |
+//      |             |       |    a) removed the L on the constant to avoid
+//      |             |       |       the 64-bit float multiply call to the
+//      |             |       |       runtime support library.
+//      |             |       |    b) removed the conversion from float to
+//      |             |       |       int before the multiply.  This prevented
+//      |             |       |       native floating point from being used.
+//      |             |       |
+//      |             |       | 4. FLOAT_MATH: Modified IQdiv and IQNdiv macros t
+//      |             |       |    such that the arguments are cast to float before
+//      |             |       |    he division.
+//      |             |       |
+//      |             |       |    In some cases the IQ_MATH verion was used to
+//      |             |       |    divide an _iq type by an int32, which works fine.
+//      |             |       |
+//      |             |       |    This change will allow the FLOAT_TYPE macros to
+//      |             |       |    to also be used with integer types, and not
+//      |             |       |    just "_iq" (i.e. float) types.
+//      |             |       |
+//      |             |       | 5. FLOAT_MATH: Changed the definition of sat for float
+//      |             |       |    math.  This new definition uses compiler intrinsics and
+//      |             |       |    requires codegen tools V5.2.2 or later
+//      |             |       |    The previous definition can be uncommented
+//      |             |       |    if needed for previous versions of the codegen tools
+//      |             |       |    however it will not be efficient.
+// -----|-------------|-------|----------------------------------------------
+// 1.6.0| August 2011 |       | Added LOG function
+// -----|-------------|-------|----------------------------------------------
 //###########################################################################
-// $TI Release: DSP2833x/DSP2823x C/C++ Header Files V1.31 $
-// $Release Date: August 4, 2009 $
+// $TI Release: Release 1.5c $
+// $Release Date: June 8, 2010 $
 //###########################################################################
 //
 // User needs to configure "MATH_TYPE" and "GLOBAL_Q" values:
@@ -162,6 +203,20 @@ typedef   long    _iq4;
 typedef   long    _iq3;
 typedef   long    _iq2;
 typedef   long    _iq1;
+//---------------------------------------------------------------------------
+#define _IQmpy2(A)          ((A)<<1)
+#define _IQmpy4(A)          ((A)<<2)
+#define _IQmpy8(A)          ((A)<<3)
+#define _IQmpy16(A)         ((A)<<4)
+#define _IQmpy32(A)         ((A)<<5)
+#define _IQmpy64(A)         ((A)<<6)
+
+#define _IQdiv2(A)          ((A)>>1)
+#define _IQdiv4(A)          ((A)>>2)
+#define _IQdiv8(A)          ((A)>>3)
+#define _IQdiv16(A)         ((A)>>4)
+#define _IQdiv32(A)         ((A)>>5)
+#define _IQdiv64(A)         ((A)>>6)
 //---------------------------------------------------------------------------
 #define   _IQ30(A)      (long) ((A) * 1073741824.0L)
 #define   _IQ29(A)      (long) ((A) * 536870912.0L)
@@ -3458,6 +3513,128 @@ extern    int  _IQ1toa(char *A, const char *B, long C);
 #define   _IQ3abs(A)   labs(A)
 #define   _IQ2abs(A)   labs(A)
 #define   _IQ1abs(A)   labs(A)
+//---------------------------------------------------------------------------
+extern    long _IQ30log(long A);
+extern    long _IQ29log(long A);
+extern    long _IQ28log(long A);
+extern    long _IQ27log(long A);
+extern    long _IQ26log(long A);
+extern    long _IQ25log(long A);
+extern    long _IQ24log(long A);
+extern    long _IQ23log(long A);
+extern    long _IQ22log(long A);
+extern    long _IQ21log(long A);
+extern    long _IQ20log(long A);
+extern    long _IQ19log(long A);
+extern    long _IQ18log(long A);
+extern    long _IQ17log(long A);
+extern    long _IQ16log(long A);
+extern    long _IQ15log(long A);
+extern    long _IQ14log(long A);
+extern    long _IQ13log(long A);
+extern    long _IQ12log(long A);
+extern    long _IQ11log(long A);
+extern    long _IQ10log(long A);
+extern    long _IQ9log(long A);
+extern    long _IQ8log(long A);
+extern    long _IQ7log(long A);
+extern    long _IQ6log(long A);
+extern    long _IQ5log(long A);
+extern    long _IQ4log(long A);
+extern    long _IQ3log(long A);
+extern    long _IQ2log(long A);
+extern    long _IQ1log(long A);
+
+#if GLOBAL_Q == 30
+#define   _IQlog(A)  _IQ30log(A)
+#endif
+#if GLOBAL_Q == 29
+#define   _IQlog(A)  _IQ29log(A)
+#endif
+#if GLOBAL_Q == 28
+#define   _IQlog(A)  _IQ28log(A)
+#endif
+#if GLOBAL_Q == 27
+#define   _IQlog(A)  _IQ27log(A)
+#endif
+#if GLOBAL_Q == 26
+#define   _IQlog(A)  _IQ26log(A)
+#endif
+#if GLOBAL_Q == 25
+#define   _IQlog(A)  _IQ25log(A)
+#endif
+#if GLOBAL_Q == 24
+#define   _IQlog(A)  _IQ24log(A)
+#endif
+#if GLOBAL_Q == 23
+#define   _IQlog(A)  _IQ23log(A)
+#endif
+#if GLOBAL_Q == 22
+#define   _IQlog(A)  _IQ22log(A)
+#endif
+#if GLOBAL_Q == 21
+#define   _IQlog(A)  _IQ21log(A)
+#endif
+#if GLOBAL_Q == 20
+#define   _IQlog(A)  _IQ20log(A)
+#endif
+#if GLOBAL_Q == 19
+#define   _IQlog(A)  _IQ19log(A)
+#endif
+#if GLOBAL_Q == 18
+#define   _IQlog(A)  _IQ18log(A)
+#endif
+#if GLOBAL_Q == 17
+#define   _IQlog(A)  _IQ17log(A)
+#endif
+#if GLOBAL_Q == 16
+#define   _IQlog(A)  _IQ16log(A)
+#endif
+#if GLOBAL_Q == 15
+#define   _IQlog(A)  _IQ15log(A)
+#endif
+#if GLOBAL_Q == 14
+#define   _IQlog(A)  _IQ14log(A)
+#endif
+#if GLOBAL_Q == 13
+#define   _IQlog(A)  _IQ13log(A)
+#endif
+#if GLOBAL_Q == 12
+#define   _IQlog(A)  _IQ12log(A)
+#endif
+#if GLOBAL_Q == 11
+#define   _IQlog(A)  _IQ11log(A)
+#endif
+#if GLOBAL_Q == 10
+#define   _IQlog(A)  _IQ10log(A)
+#endif
+#if GLOBAL_Q == 9
+#define   _IQlog(A)  _IQ9log(A)
+#endif
+#if GLOBAL_Q == 8
+#define   _IQlog(A)  _IQ8log(A)
+#endif
+#if GLOBAL_Q == 7
+#define   _IQlog(A)  _IQ7log(A)
+#endif
+#if GLOBAL_Q == 6
+#define   _IQlog(A)  _IQ6log(A)
+#endif
+#if GLOBAL_Q == 5
+#define   _IQlog(A)  _IQ5log(A)
+#endif
+#if GLOBAL_Q == 4
+#define   _IQlog(A)  _IQ4log(A)
+#endif
+#if GLOBAL_Q == 3
+#define   _IQlog(A)  _IQ3log(A)
+#endif
+#if GLOBAL_Q == 2
+#define   _IQlog(A)  _IQ2log(A)
+#endif
+#if GLOBAL_Q == 1
+#define   _IQlog(A)  _IQ1log(A)
+#endif
 //###########################################################################
 #else   // MATH_TYPE == FLOAT_MATH
 //###########################################################################
@@ -3495,6 +3672,21 @@ typedef   float   _iq4;
 typedef   float   _iq3;
 typedef   float   _iq2;
 typedef   float   _iq1;
+
+//---------------------------------------------------------------------------
+#define _IQmpy2(A)          ((A)*2.0)
+#define _IQmpy4(A)          ((A)*4.0)
+#define _IQmpy8(A)          ((A)*8.0)
+#define _IQmpy16(A)         ((A)*16.0)
+#define _IQmpy32(A)         ((A)*32.0)
+#define _IQmpy64(A)         ((A)*64.0)
+
+#define _IQdiv2(A)          ((A)*0.5)
+#define _IQdiv4(A)          ((A)*0.25)
+#define _IQdiv8(A)          ((A)*0.125)
+#define _IQdiv16(A)         ((A)*0.0625)
+#define _IQdiv32(A)         ((A)*0.03125)
+#define _IQdiv64(A)         ((A)*0.015625)
 //---------------------------------------------------------------------------
 #define   _IQ(A)         (A)
 #define   _IQ30(A)       (A)
@@ -3559,8 +3751,12 @@ typedef   float   _iq1;
 #define   _IQ2toF(A)     (A)
 #define   _IQ1toF(A)     (A)
 //---------------------------------------------------------------------------
-extern  float _satf(float A, float Pos, float Neg);
-#define   _IQsat(A, Pos, Neg)    _satf(A, Pos, Neg)
+//extern  float _satf(float A, float Pos, float Neg);
+//#define   _IQsat(A, Pos, Neg)    _satf(A, Pos, Neg)
+//
+// The following define requires codegen tools V5.2.2 or later
+//
+#define   _IQsat(A, Pos, Neg)  (__fmax(((__fmin((A),(Pos)))),(Neg)))
 //---------------------------------------------------------------------------
 #define   _IQtoIQ30(A)   (A)
 #define   _IQtoIQ29(A)   (A)
@@ -3624,21 +3820,21 @@ extern  float _satf(float A, float Pos, float Neg);
 #define   _IQ2toIQ(A)    (A)
 #define   _IQ1toIQ(A)    (A)
 //---------------------------------------------------------------------------
-#define   _IQtoQ15(A)    (short) ((long)((A) * 32768.0L))
-#define   _IQtoQ14(A)    (short) ((long)((A) * 16384.0L))
-#define   _IQtoQ13(A)    (short) ((long)((A) * 8192.0L))
-#define   _IQtoQ12(A)    (short) ((long)((A) * 4096.0L))
-#define   _IQtoQ11(A)    (short) ((long)((A) * 2048.0L))
-#define   _IQtoQ10(A)    (short) ((long)((A) * 1024.0L))
-#define   _IQtoQ9(A)     (short) ((long)((A) * 512.0L))
-#define   _IQtoQ8(A)     (short) ((long)((A) * 256.0L))
-#define   _IQtoQ7(A)     (short) ((long)((A) * 128.0L))
-#define   _IQtoQ6(A)     (short) ((long)((A) * 64.0L))
-#define   _IQtoQ5(A)     (short) ((long)((A) * 32.0L))
-#define   _IQtoQ4(A)     (short) ((long)((A) * 16.0L))
-#define   _IQtoQ3(A)     (short) ((long)((A) * 8.0L))
-#define   _IQtoQ2(A)     (short) ((long)((A) * 4.0L))
-#define   _IQtoQ1(A)     (short) ((long)((A) * 2.0L))
+#define   _IQtoQ15(A)    (int) ((A) * 32768.0)
+#define   _IQtoQ14(A)    (int) ((A) * 16384.0)
+#define   _IQtoQ13(A)    (int) ((A) * 8192.0)
+#define   _IQtoQ12(A)    (int) ((A) * 4096.0)
+#define   _IQtoQ11(A)    (int) ((A) * 2048.0)
+#define   _IQtoQ10(A)    (int) ((A) * 1024.0)
+#define   _IQtoQ9(A)     (int) ((A) * 512.0)
+#define   _IQtoQ8(A)     (int) ((A) * 256.0)
+#define   _IQtoQ7(A)     (int) ((A) * 128.0)
+#define   _IQtoQ6(A)     (int) ((A) * 64.0)
+#define   _IQtoQ5(A)     (int) ((A) * 32.0)
+#define   _IQtoQ4(A)     (int) ((A) * 16.0)
+#define   _IQtoQ3(A)     (int) ((A) * 8.0)
+#define   _IQtoQ2(A)     (int) ((A) * 4.0)
+#define   _IQtoQ1(A)     (int) ((A) * 2.0)
 
 //---------------------------------------------------------------------------
 #define   _Q15toIQ(A)    (((float) (A)) * 0.000030518)
@@ -3753,37 +3949,37 @@ extern  float _satf(float A, float Pos, float Neg);
 #define   _IQ2rsmpy(A,B)      ((A) * (B))
 #define   _IQ1rsmpy(A,B)      ((A) * (B))
 //---------------------------------------------------------------------------
-#define   _IQdiv(A,B)         ((A) / (B))
-#define   _IQ30div(A,B)       ((A) / (B))
-#define   _IQ29div(A,B)       ((A) / (B))
-#define   _IQ28div(A,B)       ((A) / (B))
-#define   _IQ27div(A,B)       ((A) / (B))
-#define   _IQ26div(A,B)       ((A) / (B))
-#define   _IQ25div(A,B)       ((A) / (B))
-#define   _IQ24div(A,B)       ((A) / (B))
-#define   _IQ23div(A,B)       ((A) / (B))
-#define   _IQ22div(A,B)       ((A) / (B))
-#define   _IQ21div(A,B)       ((A) / (B))
-#define   _IQ20div(A,B)       ((A) / (B))
-#define   _IQ19div(A,B)       ((A) / (B))
-#define   _IQ18div(A,B)       ((A) / (B))
-#define   _IQ17div(A,B)       ((A) / (B))
-#define   _IQ16div(A,B)       ((A) / (B))
-#define   _IQ15div(A,B)       ((A) / (B))
-#define   _IQ14div(A,B)       ((A) / (B))
-#define   _IQ13div(A,B)       ((A) / (B))
-#define   _IQ12div(A,B)       ((A) / (B))
-#define   _IQ11div(A,B)       ((A) / (B))
-#define   _IQ10div(A,B)       ((A) / (B))
-#define   _IQ9div(A,B)        ((A) / (B))
-#define   _IQ8div(A,B)        ((A) / (B))
-#define   _IQ7div(A,B)        ((A) / (B))
-#define   _IQ6div(A,B)        ((A) / (B))
-#define   _IQ5div(A,B)        ((A) / (B))
-#define   _IQ4div(A,B)        ((A) / (B))
-#define   _IQ3div(A,B)        ((A) / (B))
-#define   _IQ2div(A,B)        ((A) / (B))
-#define   _IQ1div(A,B)        ((A) / (B))
+#define   _IQdiv(A,B)         ((float)(A) / (float)(B))
+#define   _IQ30div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ29div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ28div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ27div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ26div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ25div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ24div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ23div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ22div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ21div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ20div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ19div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ18div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ17div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ16div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ15div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ14div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ13div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ12div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ11div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ10div(A,B)       ((float)(A) / (float)(B))
+#define   _IQ9div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ8div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ7div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ6div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ5div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ4div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ3div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ2div(A,B)        ((float)(A) / (float)(B))
+#define   _IQ1div(A,B)        ((float)(A) / (float)(B))
 //---------------------------------------------------------------------------
 #define   _IQsin(A)           sin(A)
 #define   _IQ30sin(A)         sin(A)
@@ -4486,6 +4682,38 @@ extern  float _satf(float A, float Pos, float Neg);
 #define   _IQ3abs(A)   fabs(A)
 #define   _IQ2abs(A)   fabs(A)
 #define   _IQ1abs(A)   fabs(A)
+//---------------------------------------------------------------------------
+#define   _IQlog(A)           log(A)
+#define   _IQ30log(A)         log(A)
+#define   _IQ29log(A)         log(A)
+#define   _IQ28log(A)         log(A)
+#define   _IQ27log(A)         log(A)
+#define   _IQ26log(A)         log(A)
+#define   _IQ25log(A)         log(A)
+#define   _IQ24log(A)         log(A)
+#define   _IQ23log(A)         log(A)
+#define   _IQ22log(A)         log(A)
+#define   _IQ21log(A)         log(A)
+#define   _IQ20log(A)         log(A)
+#define   _IQ19log(A)         log(A)
+#define   _IQ18log(A)         log(A)
+#define   _IQ17log(A)         log(A)
+#define   _IQ16log(A)         log(A)
+#define   _IQ15log(A)         log(A)
+#define   _IQ14log(A)         log(A)
+#define   _IQ13log(A)         log(A)
+#define   _IQ12log(A)         log(A)
+#define   _IQ11log(A)         log(A)
+#define   _IQ10log(A)         log(A)
+#define   _IQ9log(A)          log(A)
+#define   _IQ8log(A)          log(A)
+#define   _IQ7log(A)          log(A)
+#define   _IQ6log(A)          log(A)
+#define   _IQ5log(A)          log(A)
+#define   _IQ4log(A)          log(A)
+#define   _IQ3log(A)          log(A)
+#define   _IQ2log(A)          log(A)
+#define   _IQ1log(A)          log(A)
 //###########################################################################
 #endif  // No more.
 //###########################################################################
