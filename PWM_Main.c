@@ -5,8 +5,10 @@
 extern float32 vg,i,Vg; //vg,ig为采集量，采样频率10khz，Vg为vg有效值，
 extern Uint16 Sp,Sq,Sc; //三个开关
 extern float32 e;
+extern float32 E;
+float32 Ig=0.0;
 Uint16 ADCResults[1]={0}; //ADC结果储存
-Uint16 SysEnable_flag=0;
+Uint16 SysEnable_flag=0,flag=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 void main(void)
 {
@@ -60,18 +62,18 @@ void main(void)
 }
 interrupt void epwm1_timer_isr(void)
 {
-	if(SysEnable_flag==0)
+	if(SysEnable_flag==1)
 	{
 		if(Sp==1)
 		{
 			if(Sq==1)
 			{
-				Pd_cal();
+				Pset_cal();
 				Qd_cal();
 			}
 			else
 			{
-				Pd_cal();
+				Pset_cal();
 				Qset_cal();
 			}
 		}
@@ -79,12 +81,12 @@ interrupt void epwm1_timer_isr(void)
 		{
 			if(Sq==1)
 			{
-				Pset_cal();
+				Pd_cal();
 				Qd_cal();
 			}
 			else
 			{
-				Pset_cal();
+				Pd_cal();
 				Qset_cal();
 			}
 		}
@@ -100,8 +102,11 @@ interrupt void cpu_timer0_isr(void) //1khz采样
 	vg=vg_sample();
 	Vg=Vg_RMS(vg);
 	i=i_sample();
+	Ig=Ig_RMS(i);
+	E=E_RMS(e);
 	if(Vg!=0)
 		SysEnable_flag=1;
+	PieCtrlRegs.PIEACK.all=PIEACK_GROUP1;
 }
 
 

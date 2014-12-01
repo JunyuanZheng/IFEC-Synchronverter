@@ -15,7 +15,7 @@
 #define pie 3.14159
 #define T 0.0001 //PWM频率和运算周期
 #define T1 0.001 //采样周期
-#define a_Filter 0.01*pie //低通滤波器滤波系数
+#define a_Filter 0.005 //低通滤波器滤波系数
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Main.c相关函数
 interrupt void epwm1_timer_isr(void); //epwm1中断
@@ -33,6 +33,8 @@ float32 Filter(float32 input,float32 input_1);
 float32 vg_sample(void);
 float32 Vg_RMS(float32 input);
 float32 i_sample(void);
+float32 Ig_RMS(float32 input);
+float32 E_RMS(float32 input);
 void Pset_cal(void);
 void Pd_cal(void);
 void Qset_cal(void);
