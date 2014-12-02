@@ -1,15 +1,22 @@
 #include "DSP28x_Project.h"
 #include "PWM_Header.h"
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//本函数的变量
-extern float32 vg,i,Vg; //vg,ig为采集量，采样频率10khz，Vg为vg有效值，
-extern Uint16 Sp,Sq,Sc; //三个开关
+//声明本函数需要的外部变量
+extern float32 vg,i,vg_rms; //vg,ig为采集量，采样频率10khz，Vg为vg有效值，
+extern Uint16 mode; //三个开关
+extern float32 Dp,J,I_PI,K;//控制参数，
+extern float32 P,Te,W;
 extern float32 e;
-extern float32 E;
-float32 Ig=0.0;
-Uint16 ADCResults[1]={0}; //ADC结果储存
-Uint16 SysEnable_flag=0,flag=0;
+extern float32 P_set,Q_set,Q;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//声明定义本函数变量
+Uint16 flag_SysEnable=0,flag_PWMEnable=0; //各种控制标志位
+float32 Ig=0; //ig的有效值
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//测试变量
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//主函数
 void main(void)
 {
 	InitSysCtrl();
@@ -48,7 +55,7 @@ void main(void)
     ERTM;
     while(1)
     {
-    	if(SysEnable_flag==0)
+    	if(flag_PWMEnable==0)
     	{
     		 EPwm1Regs.AQCSFRC.all=PWMS_ALBL;
     		 EPwm2Regs.AQCSFRC.all=PWMS_ALBL;
@@ -60,52 +67,46 @@ void main(void)
     	}
     }
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//ePWM1中断，负责运算
 interrupt void epwm1_timer_isr(void)
 {
-	if(SysEnable_flag==1)
+	if(flag_SysEnable==1) //可以优化
 	{
-		if(Sp==1)
+		switch(mode)
 		{
-			if(Sq==1)
-			{
-				Pset_cal();
-				Qd_cal();
-			}
-			else
-			{
-				Pset_cal();
-				Qset_cal();
-			}
+		case 0: //自同步模式
+			I_PI=10;
+			K=1000000;
+			P_set=0;
+			Q_set=0;
+			Pset_cal();
+			Qset_cal();
+			break;
+		case 1: //Pset Qset模式
+			I_PI=10;
+			K=1000000;
+			P_set=4.5;
+			Pset_cal();
+			Qset_cal();
+			break;
 		}
-		else
-		{
-			if(Sq==1)
-			{
-				Pd_cal();
-				Qd_cal();
-			}
-			else
-			{
-				Pd_cal();
-				Qset_cal();
-			}
-		}
-
 	}
 	EPwm1Regs.CMPA.half.CMPA=(e/100.0+0.5)*EPwm1_TIMER_TBPRD;
 	EPwm2Regs.CMPA.half.CMPA=(-e/100.0+0.5)*EPwm2_TIMER_TBPRD;
 	EPwm1Regs.ETCLR.bit.INT=1;
 	PieCtrlRegs.PIEACK.all=PIEACK_GROUP3;
 }
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//Timer0中断，负责采样
 interrupt void cpu_timer0_isr(void) //1khz采样
 {
 	vg=vg_sample();
-	Vg=Vg_RMS(vg);
+	vg_rms=Vg_RMS(vg);
 	i=i_sample();
-	Ig=Ig_RMS(i);
-	E=E_RMS(e);
-	if(Vg!=0)
-		SysEnable_flag=1;
+	Ig=I_RMS(i);
+	if(vg_rms!=0)
+		flag_SysEnable=1;
 	PieCtrlRegs.PIEACK.all=PIEACK_GROUP1;
 }
 
