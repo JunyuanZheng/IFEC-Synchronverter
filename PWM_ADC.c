@@ -20,7 +20,7 @@ void ADCInit(void)//ADC初始化设置
 	AdcRegs.ADCTRL1.bit.SEQ_CASC=1;
 	AdcRegs.ADCMAXCONV.bit.MAX_CONV1=0; //最大采样值为此值+1
 	AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1=1;//使能ePWM_SOCA启动信号
-	AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x0;//采样1个通道
+	AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x5;//采样1个通道
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ADC读取结果

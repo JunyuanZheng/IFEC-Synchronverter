@@ -24,10 +24,16 @@ void InitEPwm1(void)
    EPwm1Regs.AQCTLA.bit.CAD=AQ_SET;
    EPwm1Regs.AQCTLB.bit.CAU=AQ_SET;
    EPwm1Regs.AQCTLB.bit.CAD=AQ_CLEAR;
+
    EPwm1Regs.ETSEL.bit.INTSEL=ET_CTR_PRD;//待分析
    EPwm1Regs.ETSEL.bit.INTEN=1;
    EPwm1Regs.ETPS.bit.INTPRD=ET_1ST;
    EPwm1Regs.ETCLR.bit.INT=1;
+   EPwm1Regs.ETSEL.bit.SOCAEN=1;//设置ePWM_SOCA为ADC模块的启动信号，使能A组的启动信号SOCA
+   EPwm1Regs.ETSEL.bit.SOCASEL=ET_CTR_PRD;//选择SOCA信号产生的时刻为CTR=PRD
+   EPwm1Regs.ETPS.bit.SOCAPRD=ET_1ST;//每次触发事件产生一个启动信号
+   EPwm1Regs.ETCLR.bit.SOCA=1;//清除SOCA标志位
+
    EPwm1Regs.DBCTL.all=0xb;
    EPwm1Regs.DBRED=50;
    EPwm1Regs.DBFED=50;
@@ -51,10 +57,6 @@ void InitEPwm2(void)
    EPwm2Regs.AQCTLA.bit.CAD=AQ_SET;
    EPwm2Regs.AQCTLB.bit.CAU=AQ_SET;
    EPwm2Regs.AQCTLB.bit.CAD=AQ_CLEAR;
-   EPwm2Regs.ETSEL.bit.SOCAEN=1;//设置ePWM_SOCA为ADC模块的启动信号，使能A组的启动信号SOCA
-   EPwm2Regs.ETSEL.bit.SOCASEL=ET_CTR_PRD;//选择SOCA信号产生的时刻为CTR=PRD
-   EPwm2Regs.ETPS.bit.SOCAPRD=ET_3RD;//每次触发事件产生一个启动信号
-   EPwm2Regs.ETCLR.bit.SOCA=1;//清除SOCA标志位
    EPwm2Regs.DBCTL.all=0xb;
    EPwm2Regs.DBRED=50;
    EPwm2Regs.DBFED=50;

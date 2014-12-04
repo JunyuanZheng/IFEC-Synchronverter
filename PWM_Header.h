@@ -13,13 +13,10 @@
 //PWM_Calculate.c相关参数
 #define pie 3.14159
 #define T 0.0001 //PWM频率和运算周期
-#define T1 0.001 //采样周期
-#define a_filter 0.005 //低通滤波器滤波系数
+#define a_filter 0.031416 //低通滤波器滤波系数
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Main.c相关函数
 interrupt void epwm1_timer_isr(void); //epwm1中断
-interrupt void cpu_timer0_isr(void); //timer0中断
-void TimerInit(void);
 void InitEPwm1(void);
 void InitEPwm2(void);
 void ADCInit(void);
@@ -27,10 +24,8 @@ void ReadADC(unsigned int *p);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Calculate.c相关函数
 void CalculateInit(void);
-float32 Filter(float32 input,float32 input_1);
-float32 vg_sample(void);
-float32 Vg_RMS(float32 input);
-float32 i_sample(void);
+void vg_sample(void);
+void i_sample(void);
 float32 I_RMS(float32 input);
 void Pset_cal(void);
 void Pd_cal(void);
@@ -43,4 +38,6 @@ float32 sin(float32 input); //正弦云孙FPU
 float32 cos(float32 input); //余弦云孙FPU
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //函数测试区
+float32 P_Mean(float32 input);
+float32 Filter(float32 input,float32 input_1);
 #endif /* PWM_HEADER_H_ */
