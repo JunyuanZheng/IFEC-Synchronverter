@@ -13,7 +13,7 @@
 //PWM_Calculate.c相关参数
 #define pie 3.14159
 #define T 0.0001 //PWM频率和运算周期
-#define a_filter 0.031416 //低通滤波器滤波系数
+//#define a_filter 0.031416 //低通滤波器滤波系数
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Main.c相关函数
 interrupt void epwm1_timer_isr(void); //epwm1中断
@@ -39,5 +39,6 @@ float32 cos(float32 input); //余弦云孙FPU
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //函数测试区
 float32 P_Mean(float32 input);
-float32 Filter(float32 input,float32 input_1);
+float32 Filter(float32 input,float32 input_1,float32 a_filter);
+float32 Q_Mean(float32 input);
 #endif /* PWM_HEADER_H_ */

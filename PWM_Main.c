@@ -12,6 +12,9 @@ extern float32 P_set,Q_set,Q;
 //声明定义本函数变量
 Uint16 flag_PWMEnable=0; //各种控制标志位
 float32 Ig=0; //ig的有效值
+extern float32 Mfif,Mfif_compen,Mfif_cal,Q_1;
+extern float32 Tm,T_sum,Te,Te_1,dT,dT_IOutput;
+Uint16 mode_1=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //测试变量
 float32 Pmean;
@@ -70,6 +73,11 @@ interrupt void epwm1_timer_isr(void)
 	vg_sample(); //可能会有问题 vg_sample,P_cal以及Q_cal的函数位置需要设计
 	i_sample();  //可能会有问题
 	Ig=I_RMS(i);
+	if(mode_1!=mode) //新增部分，模式转换过程中部分参数清零
+		Q_1=0.0;
+		Mfif_cal=0;
+		Mfif_compen=30*sqrt(2)/100.0/pie;
+		Mfif=Mfif_cal+Mfif_compen;
 	switch(mode)
 	{
 	case 0: //自同步模式
@@ -81,14 +89,16 @@ interrupt void epwm1_timer_isr(void)
 		Q_set=0;
 		Pset_cal();
 		Qset_cal();
+		mode_1=0;
 		break;
 	case 1: //Pset Qset模式
 		J=2e-3;
 		I_PI=10;
 		K=1092.77;
-		P_set=12;
+		P_set=9;
 		Pd_cal();
 		Qset_cal();
+		mode_1=1;
 		break;
 	}
 	EPwm1Regs.CMPA.half.CMPA=(e/100.0+0.5)*EPwm1_TIMER_TBPRD;

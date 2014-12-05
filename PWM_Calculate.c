@@ -116,7 +116,7 @@ void Pset_cal(void)
 {
 	Tm=P_set/wn;
 	Te=i*Mfif*sin(angle);
-	Te=Filter(Te,Te_1);
+	Te=Filter(Te,Te_1,0.031416);
 	Te_1=Te;
 	dT=Dp*(w-wr);
 	dT_IOutput=dT_IOutput+I_PI*T*dT;
@@ -134,7 +134,7 @@ void Pd_cal(void)
 {
 	Tm=P_set/wn;
 	Te=i*Mfif*sin(angle);
-	Te=Filter(Te,Te_1);
+	Te=Filter(Te,Te_1,0.031416);
 	Te_1=Te;
 	dT=Dp*(w-wn);
 	T_sum=Tm-dT-Te;
@@ -149,7 +149,7 @@ void Pd_cal(void)
 void Qset_cal(void)
 {
 	Q=-Mfif*i*w*cos(angle);
-	Q=Filter(Q,Q_1);
+	Q=Filter(Q,Q_1,0.015708); //滤波系数取值问题带考虑
 	Q_1=Q;
 	Q_sum=-Q+Q_set;
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
@@ -160,7 +160,7 @@ void Qset_cal(void)
 void Qd_cal(void)
 {
 	Q=-Mfif*i*w*cos(angle);
-	Q=Filter(Q,Q_1);
+	Q=Filter(Q,Q_1,0.015708); //滤波系数取值问题带考虑
 	Q_1=Q;
 	Q_sum=-Q+Q_set+Dq*(vn_rms-vg_rms); //vg_rms需要计算程序
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
@@ -186,7 +186,8 @@ float32 P_Mean(float32 input)
 	return output;
 }
 //---------------------------------------------------可优化函数-----------------------------------------------------------------
-float32 Filter(float32 input,float32 input_1)
+//滤波函数a_filter和截止频率有关
+float32 Filter(float32 input,float32 input_1,float32 a_filter) //
 {
 	float32 output;
 	output=(1-a_filter)*input_1+input*a_filter; //参数a
