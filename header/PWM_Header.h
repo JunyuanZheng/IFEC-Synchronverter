@@ -26,7 +26,6 @@ void ReadADC(unsigned int *p);
 void CalculateInit(void);
 void vg_sample(void);
 void i_sample(void);
-float32 I_RMS(float32 input);
 void Pset_cal(void);
 void Pd_cal(void);
 void Qset_cal(void);
@@ -40,5 +39,7 @@ float32 cos(float32 input); //ÓàÏÒÔÆËïFPU
 //º¯Êı²âÊÔÇø
 float32 P_Mean(float32 input);
 float32 Filter(float32 input,float32 input_1,float32 a_filter);
+float32 Q_Mean(float32 input);
+float32 Vg_RMS(float32 input);
 float32 Q_Mean(float32 input);
 #endif /* PWM_HEADER_H_ */

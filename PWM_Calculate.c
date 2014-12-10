@@ -25,10 +25,10 @@ void CalculateInit(void)
 	adc_results[0]=0;
 
 	vg=0.0;
-	vg_rms=30;
+	vg_rms=220;
 
 	wn=100.0*pie;
-	vn_rms=30;
+	vn_rms=220;//60;//30;
 
 	ig=0.0;
 	i=0.0;
@@ -57,7 +57,7 @@ void CalculateInit(void)
 	Q=0.0;
 	Q_1=0.0;
 	Mfif_cal=0;
-	Mfif_compen=30*sqrt(2)/100.0/pie;
+	Mfif_compen=220*sqrt(2)/100.0/pie;//30
 	Mfif=Mfif_cal+Mfif_compen;
 
 	angle=0.0;
@@ -65,14 +65,14 @@ void CalculateInit(void)
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //vg采样，现在为模拟50hz电网，实际应为采样电网电压
-void vg_sample(void) //vg采样运算 1kHz采样
+void vg_sample(void) //vg采样运算 10kHz采样 //已修改
 {
-	static Uint16 count=0,n=200;
+	static Uint16 count=1,n=200;
+	vg=220*sqrt(2)*sin(pie*count*0.01);
 	if(count<n)
 		count++;
 	else
 		count=1;
-	vg=30*sqrt(2)*sin(pie*count*0.01);
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //电流i计算，1：虚拟电流 2：电网电流采样
@@ -86,28 +86,9 @@ void i_sample(void)
 		break;
 	default:
 		ReadADC(adc_results); //读取ADC解雇
-		i=(6.0*adc_results[0]/4096.0-3.0)*1000/470; //对结果进行转换 通过测试
+		i=e/100;//(6.0*(adc_results[0])/4095.0-3.0)*1000/470; //对结果进行转换 通过测试
 		break;
 	}
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//i的有效值计算
-float32 I_RMS(float32 input)
-{
-	static float32 temp=0.0,output=0.0;
-	static Uint16 count=0,n=200; //采样频率1kHz
-	if(count<n)
-	{
-		count++;
-		temp=temp+input*input;
-	}
-	else
-	{
-		count=0;
-		output=sqrt(temp/n);
-		temp=0;
-	}
-	return output;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PQ不同模式计算
@@ -149,7 +130,7 @@ void Pd_cal(void)
 void Qset_cal(void)
 {
 	Q=-Mfif*i*w*cos(angle);
-	Q=Filter(Q,Q_1,0.015708); //滤波系数取值问题带考虑
+	Q=Filter(Q,Q_1,0.031416); //滤波系数取值问题带考虑
 	Q_1=Q;
 	Q_sum=-Q+Q_set;
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
@@ -160,7 +141,7 @@ void Qset_cal(void)
 void Qd_cal(void)
 {
 	Q=-Mfif*i*w*cos(angle);
-	Q=Filter(Q,Q_1,0.015708); //滤波系数取值问题带考虑
+	Q=Filter(Q,Q_1,0.031416); //滤波系数取值问题带考虑
 	Q_1=Q;
 	Q_sum=-Q+Q_set+Dq*(vn_rms-vg_rms); //vg_rms需要计算程序
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
@@ -185,6 +166,40 @@ float32 P_Mean(float32 input)
 	}
 	return output;
 }
+float32 Vg_RMS(float32 input)
+{
+	static float32 temp=0.0,output=0.0;
+	static Uint16 count=0,n=200; //采样频率1kHz
+	if(count<n)
+	{
+		count++;
+		temp=temp+input*input;
+	}
+	else
+	{
+		count=0;
+		output=sqrt(temp/n);
+		temp=0;
+	}
+	return output;
+}
+float32 Q_Mean(float32 input)
+{
+	static float32 sum=0.0,output=0.0;
+	static Uint16 count=0,n=200; //可更改
+	if(count<n)
+	{
+		count++;
+		sum=sum+input;
+	}
+	else
+	{
+		count=0;
+		output=sum/n;
+		sum=0;
+	}
+	return output;
+}
 //---------------------------------------------------可优化函数-----------------------------------------------------------------
 //滤波函数a_filter和截止频率有关
 float32 Filter(float32 input,float32 input_1,float32 a_filter) //
@@ -193,3 +208,5 @@ float32 Filter(float32 input,float32 input_1,float32 a_filter) //
 	output=(1-a_filter)*input_1+input*a_filter; //参数a
 	return output;
 }
+
+

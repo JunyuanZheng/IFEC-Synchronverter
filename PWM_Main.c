@@ -5,19 +5,20 @@
 extern float32 vg,i,vg_rms; //vg,ig为采集量，采样频率10khz，Vg为vg有效值，
 extern Uint16 mode; //三个开关
 extern float32 Dp,J,I_PI,K;//控制参数，
+extern float32 Mfif,Mfif_compen,Mfif_cal,Q_1;
+extern float32 Tm,T_sum,Te,Te_1,dT,dT_IOutput;
 extern float32 P,Te,w;
 extern float32 e;
 extern float32 P_set,Q_set,Q;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //声明定义本函数变量
 Uint16 flag_PWMEnable=0; //各种控制标志位
-float32 Ig=0; //ig的有效值
-extern float32 Mfif,Mfif_compen,Mfif_cal,Q_1;
-extern float32 Tm,T_sum,Te,Te_1,dT,dT_IOutput;
 Uint16 mode_1=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //测试变量
-float32 Pmean;
+float32 Pmean,Qmean;
+float32 sample0[500];
+int32 sample1[500];
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //主函数
 void main(void)
@@ -70,19 +71,13 @@ void main(void)
 //ePWM1中断，负责运算
 interrupt void epwm1_timer_isr(void)
 {
+	static Uint16 count=0;
 	vg_sample(); //可能会有问题 vg_sample,P_cal以及Q_cal的函数位置需要设计
-	i_sample();  //可能会有问题
-	Ig=I_RMS(i);
-	if(mode_1!=mode) //新增部分，模式转换过程中部分参数清零
-		Q_1=0.0;
-		Mfif_cal=0;
-		Mfif_compen=30*sqrt(2)/100.0/pie;
-		Mfif=Mfif_cal+Mfif_compen;
 	switch(mode)
 	{
 	case 0: //自同步模式
 		Dp=0.56;
-		J=2e-3;
+		J=3e-5;
 		I_PI=20;
 		K=1092.77;
 		P_set=0;
@@ -91,7 +86,7 @@ interrupt void epwm1_timer_isr(void)
 		Qset_cal();
 		mode_1=0;
 		break;
-	case 1: //Pset Qset模式
+	case 1: //Pd Qset模式
 		J=2e-3;
 		I_PI=10;
 		K=1092.77;
@@ -100,11 +95,28 @@ interrupt void epwm1_timer_isr(void)
 		Qset_cal();
 		mode_1=1;
 		break;
+	case 2: //Pd Qset模式
+		J=3e-5;
+		K=5000;
+		P_set=500;
+		vg_rms=Vg_RMS(e);
+		Q_set=0;
+		Pd_cal();
+		Qd_cal();
+		mode_1=2;
+		break;
 	}
-	EPwm1Regs.CMPA.half.CMPA=(e/100.0+0.5)*EPwm1_TIMER_TBPRD;
-	EPwm2Regs.CMPA.half.CMPA=(-e/100.0+0.5)*EPwm2_TIMER_TBPRD;
+	i_sample();  //可能会有问题
+	EPwm1Regs.CMPA.half.CMPA=(e/760.0+0.5)*EPwm1_TIMER_TBPRD;
+	EPwm2Regs.CMPA.half.CMPA=(-e/760.0+0.5)*EPwm2_TIMER_TBPRD;
 	P=Te*w;
+	sample0[count]=Mfif;
+	sample1[count]=e;
+	count++;
+	if(count==500)
+		count=0;
 	Pmean=P_Mean(P);
+	Qmean=Q_Mean(Q);
 	EPwm1Regs.ETCLR.bit.INT=1;
 	PieCtrlRegs.PIEACK.all=PIEACK_GROUP3;
 }
