@@ -20,7 +20,7 @@
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.SEED XDS560PLUS Emulator_0/C28xx" value="Inverter"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_PROJECT.Texas Instruments XDS100v2 USB Debug Probe_0/C28xx" value="Inverter"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.ATTR_TARGET_CONFIG" value="${target_config_active_default:Inverter}"/>
-<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.SEED XDS560PLUS Emulator_0/C28xx" value="D:/Inverter\Debug\Inverter.out"/>
+<stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.SEED XDS560PLUS Emulator_0/C28xx" value="D:/DSP-Inverter-1\Debug\Inverter.out"/>
 <stringAttribute key="com.ti.ccstudio.debug.debugModel.MRU_PROGRAM.Texas Instruments XDS100v2 USB Debug Probe_0/C28xx" value="D:/Inverter\Debug\Inverter.out"/>
 <mapAttribute key="com.ti.ccstudio.debug.ui.displayFormats">
 <mapEntry key="SEED XDS560PLUS Emulator_0/C28xx@##separator##@1" value="16-Bit Hex - TI Style"/>
