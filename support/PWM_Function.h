@@ -14,37 +14,35 @@ void ReadADC(unsigned int *p);
 void CalculateInit(void);
 void vg_sample(void);
 void i_sample(void);
-void Pset_cal(void);
-void Pd_cal(void);
-void Qset_cal(void);
-void Qd_cal(void);
+void P_cal(void);
+void Q_cal(void);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_ePWM.c相关函数
 void InitEPwm1(void);
 void InitEPwm2(void);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//PWM_FIR.c相关函数
+void InitFIR(void);
+//滤波函数
+float32 TeFIR_cal(float32 input);
+float32 QFIR_cal(float32 input);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Main.c相关函数
 interrupt void epwm1_isr(void); //epwm1中断
-interrupt void cpu_timer0_isr(void); //Timer0中断
+//interrupt void cpu_timer0_isr(void); //Timer0中断
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_SCI.c相关函数
-void SCIAInit(void);
-void SCIASend(Uint16 input);
-interrupt void SCITxA_isr(void);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//PWM_Timer.c相关函数
-void TimerInit(void);
+void InitSCI(void);
+void sci_send(Uint16 input);
+interrupt void sciaTx_isr(void);
+interrupt void sciaRx_isr(void);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_SupportCalculate.c相关函数
+//发送数据有关函数
 void TransData(float32 input);
-float32 TeFilter(float32 input,float32 b);
-float32 QFilter(float32 input,float32 b);
-
-float32 P_Mean(float32 input);
-float32 Filter(float32 input,float32 input_1,float32 a_filter);
-float32 Q_Mean(float32 input);
-float32 Vg_RMS(float32 input);
-float32 Q_Mean(float32 input);
+Uint16 TransControl(void);
+//辅助函数
+float32 e_RMS(float32 input);
 
 
 #endif /* PWM_FUNCTION_H_ */

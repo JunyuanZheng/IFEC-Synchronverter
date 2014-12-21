@@ -16,8 +16,8 @@ void InitEPwm1(void)
    EPwm1Regs.TBCTL.bit.CLKDIV=TB_DIV1;
    EPwm1Regs.CMPCTL.bit.SHDWAMODE=CC_SHADOW;
    EPwm1Regs.CMPCTL.bit.SHDWBMODE=CC_SHADOW;
-   EPwm1Regs.CMPCTL.bit.LOADAMODE=CC_CTR_ZERO;//´ý·ÖÎö
-   EPwm1Regs.CMPCTL.bit.LOADBMODE=CC_CTR_ZERO;//´ý·ÖÎö
+   EPwm1Regs.CMPCTL.bit.LOADAMODE=CC_CTR_PRD;//´ý·ÖÎö
+   EPwm1Regs.CMPCTL.bit.LOADBMODE=CC_CTR_PRD;//´ý·ÖÎö
    EPwm1Regs.AQCTLA.bit.CAU=AQ_CLEAR;
    EPwm1Regs.AQCTLA.bit.CAD=AQ_SET;
    EPwm1Regs.AQCTLB.bit.CAU=AQ_SET;
@@ -47,8 +47,8 @@ void InitEPwm2(void)
    EPwm2Regs.TBCTL.bit.CLKDIV=TB_DIV1;
    EPwm2Regs.CMPCTL.bit.SHDWAMODE=CC_SHADOW;
    EPwm2Regs.CMPCTL.bit.SHDWBMODE=CC_SHADOW;
-   EPwm2Regs.CMPCTL.bit.LOADAMODE=CC_CTR_ZERO;//´ý·ÖÎö
-   EPwm2Regs.CMPCTL.bit.LOADBMODE=CC_CTR_ZERO;//´ý·ÖÎö
+   EPwm2Regs.CMPCTL.bit.LOADAMODE=CC_CTR_PRD;//´ý·ÖÎö
+   EPwm2Regs.CMPCTL.bit.LOADBMODE=CC_CTR_PRD;//´ý·ÖÎö
    EPwm2Regs.AQCTLA.bit.CAU=AQ_CLEAR; //´ý²âÊÔ
    EPwm2Regs.AQCTLA.bit.CAD=AQ_SET;
    EPwm2Regs.AQCTLB.bit.CAU=AQ_SET;

@@ -28,8 +28,8 @@ MEMORY
 
    BEGIN      : origin = 0x000000, length = 0x000002     /* Boot to M0 will go here                      */
    RAMM0      : origin = 0x000050, length = 0x0003B0
-   RAML0      : origin = 0x008000, length = 0x000500
-   RAML1      : origin = 0x008500, length = 0x001B00
+   RAML0      : origin = 0x008000, length = 0x000600
+   RAML1      : origin = 0x008600, length = 0x001A00
    RAML2      : origin = 0x00A000, length = 0x001000
    RAML3      : origin = 0x00B000, length = 0x001000
    ZONE7A     : origin = 0x200000, length = 0x00FC00     /* XINTF zone 7 - program space */
@@ -142,6 +142,12 @@ SECTIONS
    .ebss            : > RAML4,     PAGE = 1
    .econst          : > RAML5,     PAGE = 1
    .esysmem         : > RAMM1,     PAGE = 1
+
+   Tedb     align(0x100) > RAML0   PAGE = 0
+   Qdb      align(0x100) > RAML0   PAGE = 0
+   TeFilter	align(0x100) > RAML1   PAGE = 0
+   QFilter	align(0x100) > RAML1   PAGE = 0
+   coefffilt align(0x100)> RAML2   PAGE = 0
 
    IQmath           : > RAML1,     PAGE = 0
    IQmathTables     : > IQTABLES,  PAGE = 0, TYPE = NOLOAD
