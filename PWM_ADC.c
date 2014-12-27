@@ -2,12 +2,8 @@
 #include "PWM_Function.h"
 #include "PWM_Parameter.h"
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//
-void ADCInit(void);
-void ReadADC(unsigned int *p);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ADC相关设置
-void ADCInit(void)//ADC初始化设置
+void ADCInit()//ADC初始化设置
 {
 	EALLOW;
 	#if (CPU_FRQ_150MHZ)   // Default - 150 MHz SYSCLKOUT
@@ -24,16 +20,31 @@ void ADCInit(void)//ADC初始化设置
     AdcRegs.ADCTRL3.bit.ADCCLKPS=0x1;
 	AdcRegs.ADCTRL1.bit.ACQ_PS=0xf;
 	AdcRegs.ADCTRL1.bit.SEQ_CASC=1;
-	AdcRegs.ADCMAXCONV.bit.MAX_CONV1=0; //最大采样值为此值+1
 	AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1=1;//使能ePWM_SOCA启动信号
-	AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x5;//采样1个通道
+}
+void ADCReInit(int16 mode)//ADC初始化设置
+{
+	switch(mode)
+	{
+	case 0: //追踪电网过零点
+		AdcRegs.ADCMAXCONV.bit.MAX_CONV1=0; //最大采样值为此值+1
+		AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x4; //vg采样在4通道
+		break;
+	}
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //ADC读取结果
-void ReadADC(unsigned int *p)//ADC读取数据
+void ReadADC(unsigned int *p,int16 mode)//ADC读取数据
 {
 	while(AdcRegs.ADCST.bit.SEQ1_BSY==1);
-	*p=AdcRegs.ADCRESULT0>>4;
+	switch(mode)
+	{
+	case 0: //追踪电网过零点
+		*p=AdcRegs.ADCRESULT0>>4;
+		break;
+	}
 	AdcRegs.ADCTRL2.bit.RST_SEQ1=1;
 	AdcRegs.ADCST.bit.INT_SEQ1_CLR=1;
 }
+
+

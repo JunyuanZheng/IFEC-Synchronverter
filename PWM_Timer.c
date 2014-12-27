@@ -7,12 +7,17 @@ void TimerInit(void)//Timer0初始化，极其中断设置，定时1us
 {
 	InitCpuTimers();
 #if (CPU_FRQ_150MHZ)
-//ConfigCpuTimer(&CpuTimer0,150,Timer0);
+ConfigCpuTimer(&CpuTimer0,150,Timer0);
+//ConfigCpuTimer(&CpuTimer1,150,Timer1);
 #endif
 #if (CPU_FRQ_100MHZ)
-//ConfigCpuTimer(&CpuTimer0,100,Timer0);
+ConfigCpuTimer(&CpuTimer0,100,Timer0);
+//ConfigCpuTimer(&CpuTimer1,100,Timer1);
 #endif
     CpuTimer0Regs.TCR.all=0x4001;
+//    CpuTimer1Regs.TCR.all=0x4001;
 }
+
+
 
 

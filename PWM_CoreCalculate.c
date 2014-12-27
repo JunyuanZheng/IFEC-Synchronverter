@@ -4,68 +4,51 @@
 #include "PWM_Parameter.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //相关参数
-Uint16 mode; //三个开关
-float32 vg,vg_rms,i,e; //采集量
-float32 P_set,Q_set,P,Q,Mfif,w; //P环参数
-float32 angle;
+extern int16 mode,mode_1; //三个开关
+extern float32 vg,e_rms,i,e; //采集量
+extern float32 P_set,Q_set,P,Q,Mfif,w; //P环参数
+extern float32 angle;
+extern Uint16 adcresults[2];
 //----------------------------------------------------已通过测试函数--------------------------------------------------------------
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //初始化Calculate。c参数
 void CalculateInit(void)
 {
 	mode=0; //将Sp,Sq,Sc统一规划为mode
+	mode_1=-1;
 
 	vg=0.0;
-	vg_rms=0;
+	e_rms=0;
 	i=0.0;
 	e=0.0;
 
 	P_set=0.0;
 	Q_set=0.0;
 	Q=0.0;
-	Mfif=220*sqrt(2)/100.0/pie;
+	Mfif=Vac*sqrt(2)/100.0/pie;
 	w=100*pie;
 
 	angle=0.0;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //vg采样，现在为模拟50hz电网，实际应为采样电网电压
-void vg_sample(void) //vg采样运算 10kHz采样 //已修改
+void sample(void) //vg采样运算 10kHz采样 //已修改
 {
-	static Uint16 count=0;
-	vg=220*sqrt(2)*sin(pie*count*0.01);
-	if(count<199)
-		count++;
-	else
-		count=0;
-}
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//电流i计算，1：虚拟电流 2：电网电流采样
-void i_sample(void)
-{
-	const float32 L=10e-3,R=2.0;
-//	const float32 L1=16e-3,R1=0.27;
-	static float32 input=0,output_1=0,input_1=0;
-//	static float32 input1=0,output1_1=0,input1_1=0;
-//	static Uint16 adc_results[1];
+	const float32 L=10e-3,R=2.0; //恒定量i用
+	static float32 input=0,output_1=0,input_1=0; //i用
 
 	switch(mode)
 	{
-	case 0:
-		input=e-vg;
-		i=((input+input_1)-(R-2*L/T)*output_1)/(R+2*L/T);
-		input_1=input;
-		output_1=i;
-		break;
-	default:
-		//ReadADC(adc_results); //读取ADC解雇
-		//(6.0*(adc_results[0])/4095.0-3.0)*1000/470; //对结果进行转换 通过测试
-		//input1=e-vg;
-		//i=((input1+input1_1)-(R1-2*L1/T)*output1_1)/(R1+2*L1/T);
-		//input1_1=input1;
-		//output1_1=i;
-		i=e/200;
-		break;
+		case 0:
+			vg=1.04*(6.0*(adcresults[0]-10)/4095.0-3.0)/156.6667*0.4*136*1000; //结果转换
+			input=e-vg;
+			i=((input+input_1)-(R-2*L/T)*output_1)/(R+2*L/T);
+			input_1=input;
+			output_1=i;
+			break;
+		default:
+			i=(6.0*(adcresults[1])/4095.0-3.0)*500/470; //对结果进行转换 通过测试 adcresults[1]位置可能不对
+			break;
 	}
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -112,9 +95,9 @@ void P_cal(void)
 //Qset模式
 void Q_cal(void)
 {
-	const float32 Mfif_compen=220*sqrt(2)/100.0/pie;
+	const float32 Mfif_compen=Vac*sqrt(2)/100.0/pie;
 	const float32 K=1092.77,Dq=43.48;
-	const float32 vn_rms=220;
+	const float32 vn_rms=Vac;
 	static float32 Q_sum=0.0;
 	static float32 Mfif_cal=0;
 
@@ -128,27 +111,27 @@ void Q_cal(void)
  */
 
 	Q=-Mfif*i*w*cos(angle);
-    vg_rms=e_RMS(e);
+    e_rms=e_RMS(e);
 	Q=QFIR_cal(Q);
 	switch(mode)
 	{
 	case 0:
 		Q_sum=-Q+Q_set;
+		mode_1=0;
 		break;
 	case 1:
-		Q_sum=-Q+Q_set+Dq*(vn_rms-vg_rms);
+		Q_sum=-Q+Q_set+Dq*(vn_rms-e_rms);
+		mode_1=1;
 		break;
 	case 2:
 		Q_sum=-Q+Q_set;
+		mode_1=2;
 		break;
 	}
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
 	Mfif=Mfif_cal+Mfif_compen;
 	angle=angle+w*T;
-	if(angle>=2.0*pie)
-		angle=angle-2.0*pie;
-	if(angle<0)
-		angle=angle+2.0*pie;
+	if(angle>2.0*pie)
+		angle=0;
     e=Mfif*w*sin(angle);
-
 }
