@@ -14,13 +14,11 @@
 //储存性变量
 extern Uint16 adcresults[6];
 //计算性变量
-extern float32 e,e1,vg,i; //采集量
-extern float32 P_set,P,Q,Q_set,w; //PQ环参数
+extern float32 e_pwm; //采集量
 //控制性变量
 extern int16 mode,mode_1; //模式控制
 extern Uint16 flag_PWMEnable; //控制脉冲波
 Uint16 flag_DataSend=0;
-extern float32 ig;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //本函数测试变量
 int16 input_back,input_forward,input_backL,input_backH,input_forwardL,input_forwardH;
@@ -111,13 +109,13 @@ interrupt void epwm1_isr(void)
 	switch(mode)
 	{
 	case -1:
-		SinTableGenerate();
+		GridImitate();
 		break;
 	default:
 		P_cal();
 		Q_cal();
-		EPwm1Regs.CMPA.half.CMPA=(e/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD; //如两个都为(e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，4，B通道给2，3，双极型调制
-		EPwm2Regs.CMPA.half.CMPA=(-e/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD; //如两个为(+-e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，2，B通道给3，4，但极性调制
+		EPwm1Regs.CMPA.half.CMPA=(e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个都为(e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，4，B通道给2，3，双极型调制
+		EPwm2Regs.CMPA.half.CMPA=(-e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个为(+-e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，2，B通道给3，4，但极性调制
 	//	flag_DataSend=TransControl();
 	//	flag_DataSend=1;
 		break;

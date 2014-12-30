@@ -17,7 +17,7 @@ void i_cal(void);
 void vg_cal(void);
 void P_cal(void);
 void Q_cal(void);
-void SinTableGenerate(void);
+void GridImitate(void);
 float32 i_imagin(float32 e,float32 vg);
 
 float32 TeFilter(float32 input,float32 b);

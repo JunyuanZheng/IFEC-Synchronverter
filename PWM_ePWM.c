@@ -5,7 +5,7 @@
 //EPwm1,EPwm2初始化，其中EPwm1A触发中断，EPwm2A每触发3次产生1次ADC转换信号
 void InitEPwm1(void)
 {
-   EPwm1Regs.TBPRD=EPwm_TIMER_TBPRD;
+   EPwm1Regs.TBPRD=EPwm_TIMER_TBPRD1;
    EPwm1Regs.TBPHS.half.TBPHS=0x0000;
    EPwm1Regs.TBCTR=0x0000;
    EPwm1Regs.CMPA.half.CMPA=0;
@@ -36,7 +36,7 @@ void InitEPwm1(void)
 }
 void InitEPwm2(void)
 {
-   EPwm2Regs.TBPRD=EPwm_TIMER_TBPRD;
+   EPwm2Regs.TBPRD=EPwm_TIMER_TBPRD1;
    EPwm2Regs.TBPHS.half.TBPHS=0x0000;
    EPwm2Regs.TBCTR=0x0000;
    EPwm2Regs.CMPA.half.CMPA=0;
