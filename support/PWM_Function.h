@@ -13,11 +13,15 @@ void ReadADC(unsigned int *p,int16 mode);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_CoreCalculate.c相关函数
 void CalculateInit(void);
+void i_cal(void);
 void vg_cal(void);
 void P_cal(void);
 void Q_cal(void);
-void i_cal(void);
+void SinTableGenerate(void);
 float32 i_imagin(float32 e,float32 vg);
+
+float32 TeFilter(float32 input,float32 b);
+float32 QFilter(float32 input,float32 b);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_ePWM.c相关函数
 void InitEPwm1(void);
