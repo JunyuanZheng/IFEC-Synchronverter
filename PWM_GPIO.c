@@ -3,8 +3,8 @@
 #include "PWM_Function.h"
 #include "PWM_Parameter.h"
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//GPIO设置，67，68，69为三个开关
-void Gpio_setup(void)
+//输入性GPIO设置
+void Gpio_setup1(void)
 {
 	//GPIO67
 	EALLOW;
@@ -26,18 +26,15 @@ void Gpio_setup(void)
 	GpioCtrlRegs.GPCPUD.bit.GPIO69=0; //内部上拉电阻
 	GpioCtrlRegs.GPCDIR.bit.GPIO69=0; //配置为输入方向
 	EDIS;
-
+}
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//输出性GPIO设置
+void Gpio_setup2(void)
+{
 	//GPIO04
 	EALLOW;
 	GpioCtrlRegs.GPAMUX1.bit.GPIO4=0;
 	GpioCtrlRegs.GPAPUD.bit.GPIO4=0; //内部上拉电阻
 	GpioCtrlRegs.GPADIR.bit.GPIO4=1; //配置为输出方向
-	EDIS;
-
-	//GPIO05
-	EALLOW;
-	GpioCtrlRegs.GPAMUX1.bit.GPIO5=0;
-	GpioCtrlRegs.GPAPUD.bit.GPIO5=0; //内部上拉电阻
-	GpioCtrlRegs.GPADIR.bit.GPIO5=1; //配置为输出方向
 	EDIS;
 }

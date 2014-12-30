@@ -6,7 +6,7 @@
 extern int16 input_back,input_forward,input_backL,input_backH,input_forwardL,input_forwardH;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //发送数据函数（自动适应小数点位置）,目前的波特率只能发送8个字符
-/*void TransData(float32 input) //发送数据 //待测试
+void TransData(float32 input) //发送数据 //待测试
 {
 	static Uint32 input_int=0,bit_dot=0,bit_max=0;
 	static int16 j;
@@ -116,8 +116,8 @@ Uint16 TransControl(void)
 	count++;
 	return output;
 }
-*/
-void TransData(float32 input)
+
+/*void TransData(float32 input)
 {
 
 	input_forward=input;
@@ -137,6 +137,20 @@ void TransData(float32 input)
 	}
 
 }
+
+*/
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//系统自我保护函数
+void SelfProtect(void)
+{
+    GpioDataRegs.GPACLEAR.bit.GPIO4=1;
+	EPwm1Regs.AQCSFRC.all=PWMS_ALBL; //强制输出低电平
+	EPwm2Regs.AQCSFRC.all=PWMS_ALBL; //强制输出低电平
+	while(1);
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//测试用函数
 float32 e_RMS(float32 input)
 {
 	static float sum=0.0,output=0.0;
@@ -155,6 +169,5 @@ float32 e_RMS(float32 input)
 	}
 	return output;
 }
-
 
 
