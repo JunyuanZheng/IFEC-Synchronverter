@@ -14,25 +14,29 @@
 //储存性变量
 extern Uint16 adcresults[6];
 //计算性变量
-extern float32 e_pwm; //采集量
+extern float32 e_pwm,w,vg,e,ig,Q,Te; //采集量
 //控制性变量
 extern int16 mode,mode_1; //模式控制
 extern Uint16 flag_PWMEnable; //控制脉冲波
 Uint16 flag_DataSend=0;
+extern float32 Amp1;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //本函数测试变量
 int16 input_back,input_forward,input_backL,input_backH,input_forwardL,input_forwardH;
+Uint16 number;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //主函数
 void main(void)
 {
-	InitSysCtrl();
+ 	InitSysCtrl();
 	DINT;
     InitPieCtrl();
     IER=0x0000;
     IFR=0x0000;
     InitPieVectTable();
-//    DELAY_US(50000L); //延时50ms，等待其他模块完成初始化
+//    MemCopy(&RamfuncsLoadStart, &RamfuncsLoadEnd, &RamfuncsRunStart);
+//    InitFlash();
+    DELAY_US(50000L); //延时50ms，等待其他模块完成初始化
 
     EALLOW;
     SysCtrlRegs.PCLKCR0.bit.TBCLKSYNC=0; //配置ePWM前关闭TBCLK
@@ -70,20 +74,40 @@ void main(void)
     EDIS;
     EINT;
     ERTM;
+    number=0;
 
 
     while(1)
     {
-
-//    	if(flag_DataSend==1)
-//    	{
-//    		TransData(i);
+    	if(flag_DataSend==1)
+    	{
+    		TransData(Te);
+//    		sci_send(255);
 //    		sci_send(input_backL);
-//    		sci_send(input_backH);
+//   		    sci_send(input_backH);
 //    		sci_send(input_forwardL);
 //    		sci_send(input_forwardH);
-//    		flag_DataSend=0;
-//    	}
+    		flag_DataSend=0;
+    	}
+
+
+/*    	if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
+    	{
+    		DELAY_US(50000L);
+    		if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
+    			while(GpioDataRegs.GPCDAT.bit.GPIO67==0);
+    		Amp1=Amp1-0.005;
+    	}
+*/
+
+/*    	if(GpioDataRegs.GPCDAT.bit.GPIO68==0)
+    	{
+    		DELAY_US(50000L);
+    		if(GpioDataRegs.GPCDAT.bit.GPIO68==0)
+    			while(GpioDataRegs.GPCDAT.bit.GPIO68==0);
+    		Amp2=Amp2-0.005;
+    	}
+*/
 
      	if(flag_PWMEnable==0)
     	{
@@ -114,10 +138,10 @@ interrupt void epwm1_isr(void)
 	default:
 		P_cal();
 		Q_cal();
-		EPwm1Regs.CMPA.half.CMPA=(e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个都为(e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，4，B通道给2，3，双极型调制
+		EPwm1Regs.CMPA.half.CMPA =(e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个都为(e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，4，B通道给2，3，双极型调制
 		EPwm2Regs.CMPA.half.CMPA=(-e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个为(+-e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，2，B通道给3，4，但极性调制
-	//	flag_DataSend=TransControl();
-	//	flag_DataSend=1;
+//   	flag_DataSend=TransControl();
+		flag_DataSend=1;
 		break;
 	}
 	EPwm1Regs.ETCLR.bit.INT=1;
@@ -127,15 +151,8 @@ interrupt void epwm1_isr(void)
 //Timer0中断，负责开关位置判断，开关动作必须在三秒内到位，并按照特定顺序进行
 interrupt void cpu_timer0_isr(void)
 {
-	//010 67 68 69 //合闸
-	if(GpioDataRegs.GPCDAT.bit.GPIO67==1)
-		GpioDataRegs.GPASET.bit.GPIO4=1;
-	else
-		GpioDataRegs.GPACLEAR.bit.GPIO4=1;
-
-	//111 67 68 69 //全部切断
 	if(GpioDataRegs.GPCDAT.bit.GPIO69==1)
-	    SelfProtect();
+		SelfProtect();
 
 	PieCtrlRegs.PIEACK.all=PIEACK_GROUP1;
 }

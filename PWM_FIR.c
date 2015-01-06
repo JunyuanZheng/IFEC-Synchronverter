@@ -1,7 +1,7 @@
 #include "DSP28x_Project.h"     // Device Headerfile and Examples Include File
 #include "FPU.h"
 
-#define FIR_ORDER 199
+#define FIR_ORDER 127
 
 #pragma DATA_SECTION(TeFIR,"TeFilter")
 #pragma DATA_SECTION(QFIR,"QFilter")
@@ -14,7 +14,7 @@ float Tedbuffer[FIR_ORDER+1];
 float Qdbuffer[FIR_ORDER+1];
 
 #pragma DATA_SECTION(coeff,"coefffilt");
-float const coeff[FIR_ORDER+1]=FIR_FP_LPF200;
+float const coeff[FIR_ORDER+1]=FIR_FP_LPF128;
 
 void InitFIR(void)
 {

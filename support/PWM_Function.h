@@ -51,6 +51,7 @@ Uint16 TransControl(void);
 void SelfProtect(void);
 //辅助函数
 float32 e_RMS(float32 input);
+float32 vg_RMS(float32 input);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_Timer.c相关函数
 void TimerInit(void);
@@ -58,5 +59,10 @@ void TimerInit(void);
 //中断函数
 interrupt void epwm1_isr(void); //epwm1中断
 interrupt void cpu_timer0_isr(void); //Timer0中断
+
+
+float32 TeFilter(float32 input,float32 b);
+float32 QFilter(float32 input,float32 b);
+
 //interrupt void cpu_timer1_isr(void); //Timer1中断
 #endif /* PWM_FUNCTION_H_ */
