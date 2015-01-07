@@ -6,7 +6,7 @@
  * -2 只用于mode_1,用于第一次ADCReInit
  * -1 初始化生成正弦表
  * 0 用于自同步
- * 1 用于并网Pset，Qset
+ * 9 用于并网Pset，Qset
  *
  */
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -14,16 +14,16 @@
 //储存性变量
 extern Uint16 adcresults[6];
 //计算性变量
-extern float32 e_pwm,w,vg,e,ig,Q,Te; //采集量
+extern float32 e_pwm;
 //控制性变量
 extern int16 mode,mode_1; //模式控制
 extern Uint16 flag_PWMEnable; //控制脉冲波
 Uint16 flag_DataSend=0;
-extern float32 Amp1;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //本函数测试变量
 int16 input_back,input_forward,input_backL,input_backH,input_forwardL,input_forwardH;
 Uint16 number;
+extern float32 w,vg,e,ig,Q,Te,i[2],Mfif; //采集量
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //主函数
 void main(void)
@@ -61,7 +61,7 @@ void main(void)
     InitEPwm2();//EPwm2初始化
     InitEPwm1Gpio();//EPwm1 GPIO初始化
     InitEPwm2Gpio();//EPwm2 GPIO初始化
-    InitFIR(); //FIR滤波器初始化
+//    InitFIR(); //FIR滤波器初始化
     Gpio_setup1(); //GPIO初始化设置
     Gpio_setup2(); //GPIO初始化设置
     InitSCI(); //SCI初始化
@@ -81,7 +81,7 @@ void main(void)
     {
     	if(flag_DataSend==1)
     	{
-    		TransData(Te);
+    		TransData(i[k]);
 //    		sci_send(255);
 //    		sci_send(input_backL);
 //   		    sci_send(input_backH);
@@ -91,14 +91,14 @@ void main(void)
     	}
 
 
-/*    	if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
-    	{
-    		DELAY_US(50000L);
-    		if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
-    			while(GpioDataRegs.GPCDAT.bit.GPIO67==0);
-    		Amp1=Amp1-0.005;
-    	}
-*/
+//    	if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
+//    	{
+//    		DELAY_US(50000L);
+//    		if(GpioDataRegs.GPCDAT.bit.GPIO67==0)
+//    			while(GpioDataRegs.GPCDAT.bit.GPIO67==0);
+//    		mode=9;
+//    	}
+
 
 /*    	if(GpioDataRegs.GPCDAT.bit.GPIO68==0)
     	{

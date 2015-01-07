@@ -133,6 +133,12 @@ SECTIONS
    .econst          : > RAML5,     PAGE = 1
    .esysmem         : > RAMM1,     PAGE = 1
 
+//   RFFTdata1        : > RAML4,     PAGE = 1, ALIGN(256)
+//   RFFTdata2        : > RAML5,     PAGE = 1
+//   RFFTdata3        : > RAML6,     PAGE = 1
+//   RFFTdata4        : > RAML7,     PAGE = 1
+//   RFFTdata5        : > RAML7,     PAGE = 1
+
    Tedb     align(0x100) > RAML0   PAGE = 0
    Qdb      align(0x100) > RAML0   PAGE = 0
    TeFilter	align(0x100) > RAML1   PAGE = 0

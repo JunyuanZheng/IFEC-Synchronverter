@@ -9,17 +9,15 @@ extern float32 SinTable[grid_freq];
 extern float32 i[2];
 extern float32 w[2];
 //计算性变量
-extern float32 e,e_pwm,e_rms,vg,vg_rms,ig; //采集量
-extern float32 P_set,Q_set,Q,Mfif; //P环参数
+extern float32 e,e_pwm,e_rms,vg,vg_rms; //采集量
+extern float32 P_set,Q_set,Mfif; //P环参数
 extern float32 angle;
 //控制性变量
 extern int16 mode,mode_1; //三个开关
 extern Uint16 flag_PWMEnable; //控制脉冲波
-
+extern float32 phase;
 //修正性变量
 extern float32 DriftRectify_Vg;
-
-float32 Te=0.0;
 //----------------------------------------------------已通过测试函数--------------------------------------------------------------
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //初始化Calculate。c参数
@@ -30,34 +28,31 @@ void CalculateInit(void)
 	mode=-1; //将Sp,Sq,Sc统一规划为mode
 	mode_1=-2;
 
-	e_rms=0;
-	e=0.0;
+	for(count=0;count<(grid_freq-1);count++)
+		SinTable[count]=0;
 	i[k]=0;
 	i[k-1]=0;
 	w[k]=100*pie;
 	w[k-1]=100*pie;
 
+	e_rms=0;
+	e=0.0;
 	P_set=0.0;
 	Q_set=0.0;
-	Q=0.0;
 	Mfif=Vac*sqrt(2)/100.0/pie;
 
 	angle=0.0;
 
-    GpioDataRegs.GPACLEAR.bit.GPIO4=1;
     flag_PWMEnable=0;
 
 
     DriftRectify_Vg=0;
-
-	for(count=0;count<(grid_freq-1);count++)
-		SinTable[count]=0;
 }
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //i采样运算
 void i_cal(void)
 {
-	const float32 L=10e-3,R=2.0; //恒定量i用
+	const float32 L=100e-3,R=20.0; //恒定量i用
 	static float32 input=0,input_1=0,output_1=0;
 
 	i[k-1]=i[k];
@@ -70,7 +65,6 @@ void i_cal(void)
 		i[k]=((input+input_1)-(R-2*L/T)*output_1)/(R+2*L/T);
 		input_1=input;
 		output_1=i[k];
-		ig=(6.0*(adcresults[1]+19)/4095.0-3.0)*200/156.667;
 		break;
 	default:
 		i[k]=(6.0*(adcresults[1]+19)/4095.0-3.0)*200/156.667; //对结果进行转换 通过测试 adcresults[1]位置可能不对
@@ -102,13 +96,13 @@ void P_cal(void)
 {
 	const float32 Dp=0.56,J=3e-5,I_PI=2;
 	const float32 wn=100.0*pie;
-	static float32 Tm=0.0,T_sum=0.0,dT=0.0,dT_IOutput=0.0;
+	static float32 Te=0,Tm=0,T_sum=0,dT=0,dT_IOutput=0;
 	static float32 wr=100*pie;
 
 	Tm=P_set/wn;
 	Te=i[k-1]*Mfif*sin(angle);
 //	Te=TeFIR_cal(Te);
-    Te=TeFilter(Te,0.12);
+    Te=TeFilter(Te,0.1);
 	switch(mode)
 	{
 	case 0:
@@ -130,8 +124,8 @@ void P_cal(void)
 void Q_cal(void)
 {
 	const float32 Mfif_compen=Vac*sqrt(2)/100.0/pie;
-	const float32 K=1092.77,Dq=43.48;
-	static float32 Q_sum=0.0;
+	const float32 K=3000,Dq=43.48;
+	static float32 Q=0,Q_sum=0;
 	static float32 Mfif_cal=0;
 	static Uint16 point=0;
 
@@ -139,7 +133,7 @@ void Q_cal(void)
     e_rms=e_RMS(e);
     vg_rms=vg_RMS(vg);
 //	Q=QFIR_cal(Q);
-    Q=QFilter(Q,0.12);
+    Q=QFilter(Q,0.02);
 	switch(mode)
 	{
 	case 0:
@@ -147,18 +141,18 @@ void Q_cal(void)
 		mode_1=0;
 		break;
 	case 9:
-		Q_sum=-Q+Q_set+Dq*(e_rms-vg_rms);
+		Q_sum=-Q+Q_set+Dq*(220*sqrt(2)-sqrt(2)*(vg_rms+4));
 		mode_1=9;
 		break;
 	}
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;
 	Mfif=Mfif_cal+Mfif_compen;
     e=Mfif*w[k-1]*sin(angle);
-    point=(int)((angle+0.0314159*2.75)*(grid_freq/2)/pie);
+    point=(int)((angle+0.0314159*phase)*(grid_freq/2)/pie);
     if(point>=grid_freq)
     	point=point-grid_freq;
     e_pwm=Mfif*w[k-1]*SinTable[point];
-//    e_pwm=Mfif*w[k-1]*sin(angle+0.0314159*2.75);
+//    e_pwm=Mfif*w[k-1]*sin(angle+0.0314159*phase);
 	angle=angle+w[k-1]*T;
     if(angle>=2.0*pie)
     	angle=angle-2.0*pie;

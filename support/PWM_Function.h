@@ -17,8 +17,6 @@ void i_cal(void);
 void vg_cal(void);
 void P_cal(void);
 void Q_cal(void);
-void GridImitate(void);
-float32 i_imagin(float32 e,float32 vg);
 
 float32 TeFilter(float32 input,float32 b);
 float32 QFilter(float32 input,float32 b);
@@ -27,15 +25,15 @@ float32 QFilter(float32 input,float32 b);
 void InitEPwm1(void);
 void InitEPwm2(void);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//PWM_FIR.c相关函数
-void InitFIR(void);
-//滤波函数
-float32 TeFIR_cal(float32 input);
-float32 QFIR_cal(float32 input);
-//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_GPIO.c相关函数
 void Gpio_setup1(void);
 void Gpio_setup2(void);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//PWM_FIR.c相关函数
+//void InitFIR(void);
+//滤波函数
+float32 TeFIR_cal(float32 input);
+float32 QFIR_cal(float32 input);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_SCI.c相关函数
 void InitSCI(void);
@@ -44,7 +42,10 @@ interrupt void sciaTx_isr(void);
 interrupt void sciaRx_isr(void);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //PWM_SupportCalculate.c相关函数
-//发送数据有关函数
+//模拟电网
+void GridImitate(void);
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//PWM_SupportFunction.c相关函数
 void TransData(float32 input);
 Uint16 TransControl(void);
 //系统自我保护函数
@@ -59,10 +60,6 @@ void TimerInit(void);
 //中断函数
 interrupt void epwm1_isr(void); //epwm1中断
 interrupt void cpu_timer0_isr(void); //Timer0中断
-
-
-float32 TeFilter(float32 input,float32 b);
-float32 QFilter(float32 input,float32 b);
 
 //interrupt void cpu_timer1_isr(void); //Timer1中断
 #endif /* PWM_FUNCTION_H_ */

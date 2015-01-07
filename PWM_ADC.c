@@ -22,6 +22,10 @@ void ADCInit()//ADC初始化设置
 	AdcRegs.ADCTRL1.bit.SEQ_CASC=1;
 	AdcRegs.ADCTRL2.bit.EPWM_SOCA_SEQ1=1;//使能ePWM_SOCA启动信号
 }
+//void ADCRectify(int16 mode)
+//{
+//
+//}
 void ADCReInit(int16 mode)//ADC初始化设置
 {
 	switch(mode)
@@ -29,13 +33,13 @@ void ADCReInit(int16 mode)//ADC初始化设置
 	case -1:
 		AdcRegs.ADCMAXCONV.bit.MAX_CONV1=0;
 		AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x5;
+//		AdcRegs.ADCCHSELSEQ1.bit.CONV01=0x4; //i采样在4通道
 		break;
 	case 0: //自同步时需要采样vg，并且对i进行实时监控以防i过大烧坏设备
 		EPwm1Regs.TBPRD=EPwm_TIMER_TBPRD2;
 		EPwm2Regs.TBPRD=EPwm_TIMER_TBPRD2;
-		AdcRegs.ADCMAXCONV.bit.MAX_CONV1=1; //最大采样值为此值+1
+		AdcRegs.ADCMAXCONV.bit.MAX_CONV1=0; //最大采样值为此值+1
 		AdcRegs.ADCCHSELSEQ1.bit.CONV00=0x5; //vg采样在5通道
-		AdcRegs.ADCCHSELSEQ1.bit.CONV01=0x4; //vg采样在5通道
 		break;
 	case 9: //自同步时需要采样vg，并且对i进行实时监控以防i过大烧坏设备
 		AdcRegs.ADCMAXCONV.bit.MAX_CONV1=1; //最大采样值为此值+1
@@ -53,10 +57,10 @@ void ReadADC(unsigned int *p,int16 mode)//ADC读取数据
 	{
 	case -1:
 		*p=AdcRegs.ADCRESULT0>>4;
+		*(p+1)=AdcRegs.ADCRESULT1>>4;
 		break;
 	case 0: //将vg储存至[0]，i存至[1]
 		*p=AdcRegs.ADCRESULT0>>4;
-		*(p+1)=AdcRegs.ADCRESULT1>>4;
 		break;
 	case 9:
 		*p=AdcRegs.ADCRESULT0>>4;
