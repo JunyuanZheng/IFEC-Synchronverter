@@ -9,15 +9,16 @@ extern float32 SinTable[grid_freq];
 extern float32 i[2];
 extern float32 w[2];
 //计算性变量
-extern float32 e,e_pwm,e_rms,vg,vg_rms; //采集量
+extern float32 e,e_pwm,e_rms,vg; //采集量
 extern float32 P_set,Q_set,Mfif; //P环参数
 extern float32 angle;
 //控制性变量
 extern int16 mode,mode_1; //三个开关
 extern Uint16 flag_PWMEnable; //控制脉冲波
-extern float32 phase;
+extern float32 phase,vn;
 //修正性变量
 extern float32 DriftRectify_Vg;
+extern float32 Q=0,Te,vg_rms;
 //----------------------------------------------------已通过测试函数--------------------------------------------------------------
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //初始化Calculate。c参数
@@ -96,7 +97,7 @@ void P_cal(void)
 {
 	const float32 Dp=0.56,J=3e-5,I_PI=2;
 	const float32 wn=100.0*pie;
-	static float32 Te=0,Tm=0,T_sum=0,dT=0,dT_IOutput=0;
+	static float32 Tm=0,T_sum=0,dT=0,dT_IOutput=0;
 	static float32 wr=100*pie;
 
 	Tm=P_set/wn;
@@ -110,10 +111,21 @@ void P_cal(void)
 		dT_IOutput=dT_IOutput+I_PI*T*dT;
 		wr=wn+dT_IOutput;
 		break;
-	case 9:
+	case 1: //Pset,Qset
 		dT=Dp*(w[k]-wr);
 		dT_IOutput=dT_IOutput+I_PI*T*dT;
 		wr=wn+dT_IOutput;
+		break;
+	case 2: //Pd,Qd
+		dT=Dp*(w[k]-wn);
+		break;
+	case 3: //Pset,Qd
+		dT=Dp*(w[k]-wr);
+		dT_IOutput=dT_IOutput+I_PI*T*dT;
+		wr=wn+dT_IOutput;
+		break;
+	case 4: //Pd,Qset
+		dT=Dp*(w[k]-wn);
 		break;
 	}
 	T_sum=Tm-dT-Te;
@@ -125,7 +137,7 @@ void Q_cal(void)
 {
 	const float32 Mfif_compen=Vac*sqrt(2)/100.0/pie;
 	const float32 K=3000,Dq=43.48;
-	static float32 Q=0,Q_sum=0;
+	static float32 Q_sum=0;
 	static float32 Mfif_cal=0;
 	static Uint16 point=0;
 
@@ -136,13 +148,25 @@ void Q_cal(void)
     Q=QFilter(Q,0.02);
 	switch(mode)
 	{
-	case 0:
+	case 0: //Pset,Qset
 		Q_sum=-Q+Q_set;
 		mode_1=0;
 		break;
-	case 9:
-		Q_sum=-Q+Q_set+Dq*(220*sqrt(2)-sqrt(2)*(vg_rms+4));
-		mode_1=9;
+	case 1: //Pset,Qset
+		Q_sum=-Q+Q_set;
+		mode_1=1;
+		break;
+	case 2: //Pd,Qd
+		Q_sum=-Q+Q_set+Dq*(vn-e_rms); //vg_rms
+		mode_1=2;
+		break;
+	case 3: //Pset,Qd
+		Q_sum=-Q+Q_set+Dq*(vn-vg_rms);
+		mode_1=3;
+		break;
+	case 4: //Pd,Qset
+		Q_sum=-Q+Q_set;
+		mode_1=4;
 		break;
 	}
 	Mfif_cal=Mfif_cal+1.0/K*Q_sum*T;

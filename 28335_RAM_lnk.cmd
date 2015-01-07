@@ -139,11 +139,11 @@ SECTIONS
 //   RFFTdata4        : > RAML7,     PAGE = 1
 //   RFFTdata5        : > RAML7,     PAGE = 1
 
-   Tedb     align(0x100) > RAML0   PAGE = 0
-   Qdb      align(0x100) > RAML0   PAGE = 0
-   TeFilter	align(0x100) > RAML1   PAGE = 0
-   QFilter	align(0x100) > RAML1   PAGE = 0
-   coefffilt align(0x100)> RAML2   PAGE = 0
+//   Tedb     align(0x100) > RAML0   PAGE = 0
+//   Qdb      align(0x100) > RAML0   PAGE = 0
+//   TeFilter	align(0x100) > RAML1   PAGE = 0
+//   QFilter	align(0x100) > RAML1   PAGE = 0
+//   coefffilt align(0x100)> RAML2   PAGE = 0
 
 
    IQmath           : > RAML1,     PAGE = 0

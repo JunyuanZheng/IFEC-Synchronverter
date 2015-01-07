@@ -6,6 +6,7 @@
  * -2 只用于mode_1,用于第一次ADCReInit
  * -1 初始化生成正弦表
  * 0 用于自同步
+ * 1 Pset,Qset
  * 9 用于并网Pset，Qset
  *
  */
@@ -23,7 +24,8 @@ Uint16 flag_DataSend=0;
 //本函数测试变量
 int16 input_back,input_forward,input_backL,input_backH,input_forwardL,input_forwardH;
 Uint16 number;
-extern float32 w,vg,e,ig,Q,Te,i[2],Mfif; //采集量
+extern float32 Q,Te,vg_rms,Mfif,w[2],e_rms;
+Uint16 control=0;
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //主函数
 void main(void)
@@ -79,14 +81,36 @@ void main(void)
 
     while(1)
     {
-    	if(flag_DataSend==1)
+    	if((flag_DataSend==601)&&(control==1))
     	{
-    		TransData(i[k]);
-//    		sci_send(255);
-//    		sci_send(input_backL);
-//   		    sci_send(input_backH);
-//    		sci_send(input_forwardL);
-//    		sci_send(input_forwardH);
+    		TransData(w[k]/(2*pie));
+    		sci_send(255);
+    		sci_send(input_backL);
+   		    sci_send(input_backH);
+    		sci_send(input_forwardL);
+    		sci_send(input_forwardH);
+
+    		TransData(e_rms/vg_rms);
+    		sci_send(255);
+    		sci_send(input_backL);
+   		    sci_send(input_backH);
+    		sci_send(input_forwardL);
+    		sci_send(input_forwardH);
+
+    		TransData(Te*w[k]);
+    		sci_send(255);
+    		sci_send(input_backL);
+   		    sci_send(input_backH);
+    		sci_send(input_forwardL);
+    		sci_send(input_forwardH);
+
+    		TransData(Q);
+    		sci_send(255);
+    		sci_send(input_backL);
+   		    sci_send(input_backH);
+    		sci_send(input_forwardL);
+    		sci_send(input_forwardH);
+
     		flag_DataSend=0;
     	}
 
@@ -141,7 +165,7 @@ interrupt void epwm1_isr(void)
 		EPwm1Regs.CMPA.half.CMPA =(e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个都为(e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，4，B通道给2，3，双极型调制
 		EPwm2Regs.CMPA.half.CMPA=(-e_pwm/(2*Vdc)+0.5)*EPwm_TIMER_TBPRD2; //如两个为(+-e/100+0.5)*EPwm_TIMER_TBPRD则 A通道给1，2，B通道给3，4，但极性调制
 //   	flag_DataSend=TransControl();
-		flag_DataSend=1;
+		flag_DataSend++;
 		break;
 	}
 	EPwm1Regs.ETCLR.bit.INT=1;
